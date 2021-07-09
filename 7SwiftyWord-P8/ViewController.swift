@@ -136,13 +136,51 @@ class ViewController: UIViewController {
 
 
     @objc func letterTapped(_ sender: UIButton) {
+        guard let buttonTitle = sender.titleLabel?.text else { return }
         
+        currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
+        activatedButtons.append(sender)
+        sender.isHidden = true
     }
     @objc func submitTapped(_ sender: UIButton) {
+        guard let answerText = currentAnswer.text else {return}
+        
+        if let solutionPositions = solutions.firstIndex(of: answerText) {
+            activatedButtons.removeAll()
+            
+            var splitAnswers = answersLabel.text?.components(separatedBy: "\n")
+            splitAnswers?[solutionPositions] = answerText
+            answersLabel.text = splitAnswers?.joined(separator: "\n")
+            
+            currentAnswer.text = ""
+            score += 1
+            
+            if score % 7 == 0 {
+                let ac = UIAlertController(title: "Well done", message: "Are you ready for the next level?", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
+                //ac.addAction(UIAlertAction(title: "Let's go!", style: .default))
+                present(ac, animated: true)
+            }
+        }
+    }
+    func levelUp(action: UIAlertAction) {
+        level += 1
+        
+        solutions.removeAll(keepingCapacity: true)
+        loadLevel()
+        
+        for button in letterButtons {
+            button.isHidden = false
+        }
         
     }
+    
     @objc func clearTapped(_ sender: UIButton) {
-        
+        currentAnswer.text = ""
+        for button in activatedButtons {
+            button.isHidden = false
+        }
+        activatedButtons.removeAll()
     }
     func loadLevel() {
         var clueString = ""
@@ -162,7 +200,7 @@ class ViewController: UIViewController {
                     clueString += "\(index + 1). \(clue)\n"
                     
                     let solutionWord = answer.replacingOccurrences(of: "|", with: "")
-                    solutionsString = "\(solutionWord.count) letters\n"
+                    solutionsString += "\(solutionsString)\(solutionWord.count) letters\n"
                     solutions.append(solutionWord)
                     
                     let bits = answer.components(separatedBy: "|")
@@ -172,7 +210,7 @@ class ViewController: UIViewController {
         }
         
         cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
-        answersLabel.text = solutionsString.trimmingCharacters(in: .whitespacesAndNewlines)
+        answersLabel.text = solutions.map { $0.count }.map { "\($0) letters" }.joined(separator: "\n")
         letterButtons.shuffle()
         
         if letterButtons.count == letterBits.count {
