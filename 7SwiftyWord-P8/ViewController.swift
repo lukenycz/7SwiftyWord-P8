@@ -75,6 +75,8 @@ class ViewController: UIViewController {
         
         let buttonsView = UIView()
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsView.layer.borderWidth = 2
+        buttonsView.layer.borderColor = UIColor.lightGray.cgColor
         view.addSubview(buttonsView)
         
         NSLayoutConstraint.activate([
@@ -123,7 +125,7 @@ class ViewController: UIViewController {
                 
                 let frame = CGRect(x: column * width, y: row * height, width: width, height: height)
                 letterButton.frame = frame
-                
+                                
                 buttonsView.addSubview(letterButton)
                 letterButtons.append(letterButton)
             }
@@ -166,7 +168,15 @@ class ViewController: UIViewController {
                 //ac.addAction(UIAlertAction(title: "Let's go!", style: .default))
                 present(ac, animated: true)
             }
+        } else {
+            wrongAnswer()
+            score -= 1
         }
+    }
+    func wrongAnswer() {
+        let ac = UIAlertController(title: "Ooops", message: "Wrong answer, try again!", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "Ok", style: .default))
+        present(ac, animated: true)
     }
     func levelUp(action: UIAlertAction) {
         level += 1
