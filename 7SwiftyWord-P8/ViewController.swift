@@ -135,7 +135,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadLevel()
+        performSelector(inBackground: #selector(loadLevel), with: nil)
         answersLabel.backgroundColor = .gray
         cluesLabel.backgroundColor = .lightGray
         
@@ -165,7 +165,6 @@ class ViewController: UIViewController {
             if score % 7 == 0 {
                 let ac = UIAlertController(title: "Well done", message: "Are you ready for the next level?", preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
-                //ac.addAction(UIAlertAction(title: "Let's go!", style: .default))
                 present(ac, animated: true)
             }
         } else {
@@ -197,7 +196,7 @@ class ViewController: UIViewController {
         }
         activatedButtons.removeAll()
     }
-    func loadLevel() {
+    @objc func loadLevel() {
         var clueString = ""
         var solutionsString = ""
         var letterBits = [String]()
@@ -223,9 +222,10 @@ class ViewController: UIViewController {
                 }
             }
         }
-        
-        cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
-        answersLabel.text = solutions.map { $0.count }.map { "\($0) letters" }.joined(separator: "\n")
+        DispatchQueue.main.async {
+            self.cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
+            self.answersLabel.text = self.solutions.map { $0.count }.map { "\($0) letters" }.joined(separator: "\n")
+        }
         letterButtons.shuffle()
         
         if letterButtons.count == letterBits.count {
@@ -234,6 +234,5 @@ class ViewController: UIViewController {
             }
         }
     }
-    
 }
 
