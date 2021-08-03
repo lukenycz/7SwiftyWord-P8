@@ -80,6 +80,7 @@ class ViewController: UIViewController {
         view.addSubview(buttonsView)
         
         NSLayoutConstraint.activate([
+            
             scoreLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             scoreLabel.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             
@@ -147,7 +148,8 @@ class ViewController: UIViewController {
         
         currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
         activatedButtons.append(sender)
-        sender.isHidden = true
+       // sender.isHidden = true
+        sender.alpha = 0.1
     }
     @objc func submitTapped(_ sender: UIButton) {
         guard let answerText = currentAnswer.text else {return}
@@ -193,6 +195,7 @@ class ViewController: UIViewController {
         currentAnswer.text = ""
         for button in activatedButtons {
             button.isHidden = false
+            button.alpha = 1
         }
         activatedButtons.removeAll()
     }
